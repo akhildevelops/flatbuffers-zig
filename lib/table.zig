@@ -27,12 +27,12 @@ pub const Table = struct {
 
     fn readVOffset(bytes: []u8) Error!VOffset {
         if (bytes.len < @sizeOf(VOffset)) return Error.PrematureEnd;
-        return std.mem.readIntLittle(VOffset, bytes[0..@sizeOf(VOffset)]);
+        return std.mem.readInt(VOffset, bytes[0..@sizeOf(VOffset)], .little);
     }
 
     fn readOffset(bytes: []u8) Error!Offset {
         if (bytes.len < @sizeOf(Offset)) return Error.PrematureEnd;
-        return std.mem.readIntLittle(Offset, bytes[0..@sizeOf(Offset)]);
+        return std.mem.readInt(Offset, bytes[0..@sizeOf(Offset)], .little);
     }
 
     pub fn init(size_prefixed_bytes: []u8) Error!Self {
@@ -60,7 +60,7 @@ pub const Table = struct {
     fn readAt(self: Self, comptime T: type, offset_: Offset) Error!T {
         var offset = offset_;
         const Child = switch (@typeInfo(T)) {
-            .Optional => |o| o.child,
+            .optional => |o| o.child,
             else => T,
         };
 
@@ -73,7 +73,7 @@ pub const Table = struct {
         const soffset = try self.readAt(i32, offset);
         offset = signedAdd(offset, soffset);
         switch (@typeInfo(Child)) {
-            .Struct => |s| {
+            .@"struct" => |s| {
                 if (s.fields.len == 0) return Child{};
                 return Child{
                     .table = .{
@@ -82,8 +82,8 @@ pub const Table = struct {
                     },
                 };
             },
-            .Pointer => |p| brk: {
-                if (p.size != .Slice) break :brk;
+            .pointer => |p| brk: {
+                if (p.size != .slice) break :brk;
 
                 const len = try self.readAt(Offset, offset);
                 const bytes = try self.checkedSlice(offset + @sizeOf(Offset), len * @sizeOf(p.child));
@@ -96,7 +96,7 @@ pub const Table = struct {
     }
 
     fn readTableAt(self: Self, comptime T: type, offset: Offset) Error!T {
-        if (offset == 0) return if (@typeInfo(T) == .Optional) null else Error.MissingField;
+        if (offset == 0) return if (@typeInfo(T) == .optional) null else Error.MissingField;
 
         return try self.readAt(T, offset + self.offset);
     }
@@ -134,8 +134,8 @@ pub const Table = struct {
 
     pub fn isScalar(comptime T: type) bool {
         return switch (@typeInfo(T)) {
-            .Void, .Bool, .Int, .Float, .Array, .Enum => true,
-            .Struct => |s| s.layout == .Extern or s.layout == .Packed,
+            .void, .bool, .int, .float, .array, .@"enum" => true,
+            .@"struct" => |s| s.layout == .@"extern" or s.layout == .@"packed",
             else => false,
         };
     }
@@ -145,8 +145,8 @@ pub const Table = struct {
         if (try self.getFieldOffset(id)) |offset| return self.readTableAt(T, offset);
 
         switch (@typeInfo(T)) {
-            .Optional => return null,
-            .Pointer => |p| if (p.size == .Slice) return &.{},
+            .optional => return null,
+            .pointer => |p| if (p.size == .slice) return &.{},
             else => {},
         }
         return Error.InvalidVTableIndex;

@@ -112,7 +112,7 @@ test "build monster and unpack" {
 test "build monster and pack" {
     var builder = Builder.init(testing.allocator);
     const root = try example_monster.pack(&builder);
-    var bytes = try builder.finish(root);
+    const bytes = try builder.finish(root);
     defer testing.allocator.free(bytes);
 
     const packed_monster = try PackedMonster.init(bytes);

@@ -7,8 +7,8 @@ pub const isScalar = Table.isScalar;
 pub const Error = Table.Error || std.mem.Allocator.Error;
 
 fn hasAllocator(comptime T: type) bool {
-    if (@typeInfo(T) == .Struct and @hasDecl(T, "init")) {
-        return @typeInfo(@TypeOf(T.init)).Fn.params.len == 2;
+    if (@typeInfo(T) == .@"struct" and @hasDecl(T, "init")) {
+        return @typeInfo(@TypeOf(T.init)).@"fn".params.len == 2;
     }
     return false;
 }
@@ -37,7 +37,7 @@ pub fn unpackVector(
     var res = try allocator.alloc(T, len);
     errdefer allocator.free(res);
 
-    if (@typeInfo(T) == .Struct) {
+    if (@typeInfo(T) == .@"struct") {
         // 2. Vector of object
         const has_allocator = comptime hasAllocator(T);
 

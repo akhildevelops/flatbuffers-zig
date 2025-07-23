@@ -132,7 +132,7 @@ pub const Builder = struct {
     }
 
     pub fn appendTableField(self: *Self, comptime T: type, value: T) !void {
-        if (@typeInfo(T) == .Optional and value == null) {
+        if (@typeInfo(T) == .optional and value == null) {
             try self.vtable.append(@as(VOffset, 0));
         } else {
             try self.prepend(value);
@@ -472,8 +472,8 @@ test "build monster" {
     try testing.expectEqualSlices(u8, &[_]u8{
         // header 0x00
         0x2C, 0, 0, 0, // offset to root table `Monster`
-        0, 0, 0, 0,
-        0, 0, 0, 0,
+        0,    0, 0, 0,
+        0,    0, 0, 0,
         0, 0, 0, 0, // padding (align to 16)
 
         // vtable (Monster) 0x10

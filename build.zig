@@ -5,34 +5,34 @@ const path = "./lib/lib.zig";
 
 fn buildLib(
     b: *std.Build,
-    target: std.zig.CrossTarget,
+    target: std.Build.ResolvedTarget,
     optimize: std.builtin.Mode,
-) *std.build.Module {
-    const module = b.addModule(name, .{ .source_file = .{ .path = path } });
+) *std.Build.Module {
+    const module = b.addModule(name, .{ .root_source_file = b.path(path) });
 
     const lib = b.addSharedLibrary(.{
         .name = name,
-        .root_source_file = .{ .path = path },
+        .root_source_file = b.path(path),
         .target = target,
         .optimize = optimize,
     });
     b.installArtifact(lib);
 
     const tests = b.addTest(.{
-        .root_source_file = .{ .path = path },
+        .root_source_file = b.path(path),
         .target = target,
         .optimize = optimize,
     });
     const run_main_tests = b.addRunArtifact(tests);
 
     const example_tests = b.addTest(.{
-        .root_source_file = .{ .path = "./codegen/examples/lib.zig" },
+        .root_source_file = b.path("./codegen/examples/lib.zig"),
         .target = target,
         .optimize = optimize,
     });
-    example_tests.addModule(name, module);
-    example_tests.addCSourceFile(.{ .file = .{ .path = "./codegen/examples/arrow-cpp/verify.cpp" }, .flags = &.{} });
-    example_tests.addIncludePath(.{ .path = "./codegen/examples/arrow-cpp" });
+    example_tests.root_module.addImport(name, module);
+    example_tests.addCSourceFile(.{ .file = b.path("./codegen/examples/arrow-cpp/verify.cpp") });
+    example_tests.addIncludePath(b.path("./codegen/examples/arrow-cpp"));
     example_tests.linkLibCpp();
 
     const test_step = b.step("test", "Run library and example tests");
@@ -45,7 +45,7 @@ fn buildLib(
 
 fn buildExe(
     b: *std.Build,
-    target: std.zig.CrossTarget,
+    target: std.Build.ResolvedTarget,
     optimize: std.builtin.Mode,
     module: *std.Build.Module,
 ) void {
@@ -63,19 +63,19 @@ fn buildExe(
 
     const exe = b.addExecutable(.{
         .name = "flatc-zig",
-        .root_source_file = .{ .path = "./codegen/main.zig" },
+        .root_source_file = b.path("./codegen/main.zig"),
         .target = target,
         .optimize = optimize,
     });
     exe.step.dependOn(&flatc.step);
-    exe.addModule("clap", clap);
-    exe.addModule(name, module);
+    exe.root_module.addImport("clap", clap);
+    exe.root_module.addImport(name, module);
     b.installArtifact(exe);
 
     const build_options = b.addOptions();
-    build_options.addOptionArtifact("flatc_exe_path", flatc);
+    // build_options.addOptionPath("flatc_exe_path", flatc);
     build_options.addOption([]const u8, "module_name", name);
-    exe.addOptions("build_options", build_options);
+    exe.root_module.addImport("build_options", build_options.createModule());
 
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
@@ -84,12 +84,12 @@ fn buildExe(
     run_step.dependOn(&run_cmd.step);
 
     const codegen_tests = b.addTest(.{
-        .root_source_file = .{ .path = "./codegen/main.zig" },
+        .root_source_file = b.path("./codegen/main.zig"),
         .target = target,
         .optimize = optimize,
     });
-    codegen_tests.addModule(name, module);
-    codegen_tests.addOptions("build_options", build_options);
+    codegen_tests.root_module.addImport(name, module);
+    codegen_tests.root_module.addImport("build_options", build_options.createModule());
     const run_codegen_tests = b.addRunArtifact(codegen_tests);
 
     const test_step = b.step("test-exe", "Run codegen tests");

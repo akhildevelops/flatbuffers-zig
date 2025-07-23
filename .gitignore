@@ -8,3 +8,5 @@ docs
 # Needed until zig -fno-emit-bin is fixed
 *.a
 *.o
+.zig-cache
+
