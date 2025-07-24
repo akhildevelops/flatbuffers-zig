@@ -101,4 +101,8 @@ pub fn build(b: *std.Build) void {
 
     const module = buildLib(b, target, optimize);
     buildExe(b, target, optimize, module);
+    var mod_iter = b.modules.iterator();
+    while (mod_iter.next()) |entry| {
+        std.debug.print("{s}\n", .{entry.key_ptr.*});
+    }
 }
