@@ -5,6 +5,6 @@
     },
     .flatbuffers = .{
             .url = "https://github.com/akhildevelops/flatbuffers/archive/refs/heads/master.zip",
-            .hash = "flatbuffers-0.0.0-La2Y4G50CABYrOFWIYPxDKt4duY_0jJTtm_Il7cH3RuZ",
+            .hash = "flatbuffers-0.0.0-La2Y4LhWDwD3BG759M8_GSyHjVwbe_ojAxh-2TGNGxkw",
         },
 }, .paths = .{"lib"} }

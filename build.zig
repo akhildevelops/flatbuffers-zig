@@ -71,9 +71,8 @@ fn buildExe(
     exe.root_module.addImport("clap", clap);
     exe.root_module.addImport(name, module);
     b.installArtifact(exe);
-
     const build_options = b.addOptions();
-    // build_options.addOptionPath("flatc_exe_path", flatc);
+    build_options.addOptionPath("flatc_exe_path", b.path(".zig-cache/o/f616a928b2865748c3c159c3b4f0d3d0/flatc"));
     build_options.addOption([]const u8, "module_name", name);
     exe.root_module.addImport("build_options", build_options.createModule());
 

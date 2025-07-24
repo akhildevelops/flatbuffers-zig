@@ -111,7 +111,7 @@ pub const CodeWriter = struct {
 
     // This struct owns returned string
     fn getPrefixedIdentifier(self: *Self, ident: []const u8, prefix: []const u8) ![]const u8 {
-        var prefixed = try self.allocPrint("{s} {s}", .{ prefix, ident });
+        const prefixed = try self.allocPrint("{s} {s}", .{ prefix, ident });
         defer self.allocator.free(prefixed);
 
         return try getIdentifier(prefixed);
@@ -133,7 +133,7 @@ pub const CodeWriter = struct {
 
     // This struct owns returned string
     fn getPrefixedFunctionName(self: *Self, prefix: []const u8, name: []const u8) ![]const u8 {
-        var prefixed = try self.allocPrint("{s} {s}", .{ prefix, name });
+        const prefixed = try self.allocPrint("{s} {s}", .{ prefix, name });
         defer self.allocator.free(prefixed);
 
         return try self.getFunctionName(prefixed);
@@ -159,7 +159,7 @@ pub const CodeWriter = struct {
 
     // This struct owns returned string
     fn getPrefixedTypeName(self: *Self, prefix: []const u8, name: []const u8) ![]const u8 {
-        var tmp = try self.allocPrint("{s}{s}", .{ prefix, name });
+        const tmp = try self.allocPrint("{s}{s}", .{ prefix, name });
         defer self.allocator.free(tmp);
 
         var res = std.ArrayList(u8).init(self.allocator);
@@ -252,7 +252,7 @@ pub const CodeWriter = struct {
 
     // This struct owns returned string.
     fn getPrefixedTmpName(self: *Self, prefix: []const u8, name: []const u8) ![]const u8 {
-        var prefixed = try self.allocPrint("{s} {s}", .{ prefix, name });
+        const prefixed = try self.allocPrint("{s} {s}", .{ prefix, name });
         defer self.allocator.free(prefixed);
 
         return try self.getTmpName(prefixed);

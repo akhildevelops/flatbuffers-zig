@@ -14,7 +14,7 @@ pub const Case = enum {
     const Self = @This();
 
     pub fn fromString(s: []const u8) ?Self {
-        inline for (@typeInfo(Self).Enum.fields) |f| {
+        inline for (@typeInfo(Self).@"enum".fields) |f| {
             if (std.mem.eql(u8, f.name, s)) return @field(Self, f.name);
         }
 

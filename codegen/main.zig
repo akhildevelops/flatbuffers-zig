@@ -9,7 +9,7 @@ const Case = @import("./util.zig").Case;
 
 fn fatal(comptime T: type, msg: []const u8) T {
     std.debug.print("{s}\n", .{msg});
-    std.os.exit(1);
+    std.process.exit(1);
     unreachable;
 }
 
@@ -17,7 +17,7 @@ fn walk(opts: Options) !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    var dir = try std.fs.cwd().openIterableDir(opts.input_dir, .{});
+    var dir = try std.fs.cwd().openDir(opts.input_dir, .{ .iterate = true });
     defer dir.close();
 
     var walker = try dir.walk(allocator);
@@ -40,6 +40,9 @@ fn walk(opts: Options) !void {
 }
 
 pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
     const params = comptime clap.parseParamsComptime(
         \\-h, --help                 Display this help and exit
         \\-i, --input-dir <str>      Directory with .fbs files to generate code for
@@ -53,6 +56,7 @@ pub fn main() !void {
     );
     var diag = clap.Diagnostic{};
     var res = clap.parse(clap.Help, &params, clap.parsers.default, .{
+        .allocator = allocator,
         .diagnostic = &diag,
     }) catch |err| {
         diag.report(std.io.getStdErr().writer(), err) catch {};

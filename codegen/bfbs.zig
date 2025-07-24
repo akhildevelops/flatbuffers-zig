@@ -28,7 +28,7 @@ pub fn bfbs(allocator: Allocator, include: []const u8, fname: []const u8) ![]con
     }
     try argv.append(fname);
 
-    const exec_res = try std.ChildProcess.exec(.{ .allocator = allocator, .argv = argv.items });
+    const exec_res = try std.process.Child.run(.{ .allocator = allocator, .argv = argv.items });
     if (exec_res.term != .Exited or exec_res.term.Exited != 0) {
         for (argv.items) |it| std.debug.print("{s} ", .{it});
         std.debug.print("\nerror: flatc command failure:\n", .{});
