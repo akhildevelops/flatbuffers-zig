@@ -4,7 +4,11 @@
         .hash = "clap-0.10.0-oBajB434AQBDh-Ei3YtoKIRxZacVPF1iSwp3IX_ZB8f0",
     },
     .flatbuffers = .{
-            .url = "https://github.com/akhildevelops/flatbuffers/archive/refs/heads/master.zip",
-            .hash = "flatbuffers-0.0.0-La2Y4LhWDwD3BG759M8_GSyHjVwbe_ojAxh-2TGNGxkw",
-        },
-}, .paths = .{"lib"} }
+        .url = "https://github.com/akhildevelops/flatbuffers/archive/refs/heads/master.zip",
+        .hash = "flatbuffers-0.0.0-La2Y4LhWDwD3BG759M8_GSyHjVwbe_ojAxh-2TGNGxkw",
+    },
+}, .paths = .{
+    "build.zig",
+    "build.zig.zon",
+    "lib",
+} }
