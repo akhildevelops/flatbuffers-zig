@@ -1,4 +1,4 @@
-.{ .name = .flatbuffers, .version = "0.0.3", .fingerprint = 0xaedfda519b6f55c7, .dependencies = .{
+.{ .name = .flatbuffers, .version = "0.0.4", .fingerprint = 0xaedfda519b6f55c7, .minimum_zig_version = "0.14.1", .dependencies = .{
     .clap = .{
         .url = "https://github.com/Hejsil/zig-clap/archive/refs/tags/0.10.0.tar.gz",
         .hash = "clap-0.10.0-oBajB434AQBDh-Ei3YtoKIRxZacVPF1iSwp3IX_ZB8f0",
